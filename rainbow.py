@@ -12,28 +12,41 @@ __license__ = 'GPLv2'
 __version__ = '0.0.0'
 
 
-def Singleton(class_):
-    class class_w(class_):
+def Singleton(cls):
+    class cls_w(cls):
         _instance = None
 
-        def __new__(class_, *args, **kwargs):
-            if class_w._instance is None:
-                class_w._instance = super(class_w, class_).__new__(class_, *args, **kwargs)
-                class_w._instance.__initialized = False
-            return class_w._instance
+        def __new__(cls, *args, **kwargs):
+            if cls_w._instance is None:
+                cls_w._instance = super(cls_w, cls).__new__(cls, *args, **kwargs)
+                cls_w._instance.__initialized = False
+            return cls_w._instance
 
-        def __init__(class_, *args, **kwargs):
-            if class_w._instance.__initialized:
+        def __init__(cls, *args, **kwargs):
+            if cls_w._instance.__initialized:
                 return
-            super(class_w, class_).__init__(*args, **kwargs)
-            class_w._instance.__initialized = True
+            super(cls_w, cls).__init__(*args, **kwargs)
+            cls_w._instance.__initialized = True
 
-    class_w.__name__ = class_.__name__
-    return class_w
+    cls_w.__name__ = cls.__name__
+    return cls_w
 
 
 @Singleton
 class Rainbow(object):
-    pass
+
+    def __init__(self):
+        self.functions = {}
+
+    def register(self, key):
+        def decorator(function):
+            self.functions[key] = function
+            return function
+        return decorator
+
+    def call(self, key, **params):
+        ret = {}
+        ret['return'] = self.functions[key](**params)
+        return ret
 
 app = Rainbow()
