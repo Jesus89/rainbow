@@ -31,6 +31,8 @@ def Singleton(cls):
     cls_w.__name__ = cls.__name__
     return cls_w
 
+import json
+
 
 @Singleton
 class Rainbow(object):
@@ -38,15 +40,22 @@ class Rainbow(object):
     def __init__(self):
         self.functions = {}
 
+    def json_str(self, data):
+        return json.dumps(json.loads(data))
+
     def register(self, key):
         def decorator(function):
             self.functions[key] = function
             return function
         return decorator
 
-    def call(self, key, **params):
+    def call(self, key, params=None):
+        if params is None:
+            params = {}
+        else:
+            params = json.loads(params)
         ret = {}
         ret['return'] = self.functions[key](**params)
-        return ret
+        return json.dumps(ret)
 
 app = Rainbow()

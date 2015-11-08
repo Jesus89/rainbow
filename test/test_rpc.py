@@ -2,7 +2,7 @@ import unittest
 from rainbow import app
 
 
-# Setup app
+# Register functions
 
 @app.register('pi')
 def pi():
@@ -19,6 +19,18 @@ def sum(a, b):
     return a + b
 
 
+@app.register('list')
+def _list(a, b, c):
+    return [a, b, c]
+
+
+@app.register('dict')
+def _dict(key, value):
+    ret = {}
+    ret[key] = value
+    return ret
+
+
 class RainbowTest(unittest.TestCase):
 
     def setUp(self):
@@ -28,26 +40,28 @@ class RainbowTest(unittest.TestCase):
         self.assertEqual(app.functions['sum'], sum)
 
     def test_call_pi(self):
-        ret = {}
-        ret['return'] = pi()
-        self.assertEqual(app.call('pi'), ret)
+        ret = '{"return":3.141592}'
+        self.assertEqual(app.call('pi'), app.json_str(ret))
 
     def test_call_hello(self):
-        name = 'world'
-        params = {}
-        params['name'] = name
-        ret = {}
-        ret['return'] = hello(name)
-        self.assertEqual(app.call('hello', **params), ret)
+        params = '{"name":"world"}'
+        ret = '{"return":"Hello, world"}'
+        self.assertEqual(app.call('hello', params), app.json_str(ret))
 
     def test_call_sum(self):
-        params = {}
-        params['a'] = 3
-        params['b'] = 5
-        ret = {}
-        ret['return'] = 8
-        self.assertEqual(app.call('sum', **params), ret)
+        params = '{"a":3,"b":5}'
+        ret = '{"return":8}'
+        self.assertEqual(app.call('sum', params), app.json_str(ret))
 
+    def test_call_list(self):
+        params = '{"b":null,"a":3,"c":"code"}'
+        ret = '{"return":[3, null,"code"]}'
+        self.assertEqual(app.call('list', params), app.json_str(ret))
+
+    def test_call_dict(self):
+        params = '{"key":"a","value":34}'
+        ret = '{"return":{"a":34}}'
+        self.assertEqual(app.call('dict', params), app.json_str(ret))
 
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()
