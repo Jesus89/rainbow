@@ -43,19 +43,29 @@ class Rainbow(object):
     def json_str(self, data):
         return json.dumps(json.loads(data))
 
-    def register(self, key):
-        def decorator(function):
-            self.functions[key] = function
-            return function
-        return decorator
+    def register(self, key, function):
+        self.functions[key] = function
 
-    def call(self, key, params=None):
-        if params is None:
-            params = {}
+    def call(self, key, args=None, kwargs=None):
+        if args is None:
+            args = {}
         else:
-            params = json.loads(params)
+            args = json.loads(args)
+        if kwargs is None:
+            kwargs = {}
+        else:
+            kwargs = json.loads(kwargs)
         ret = {}
-        ret['return'] = self.functions[key](**params)
+        ret['result'] = self.functions[key](*args, **kwargs)
         return json.dumps(ret)
 
+
 app = Rainbow()
+
+
+# Public methods
+def register(key):
+    def decorator(function):
+        app.register(key, function)
+        return function
+    return decorator
