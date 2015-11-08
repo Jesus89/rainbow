@@ -2,42 +2,32 @@ import unittest
 from rainbow import app
 
 
-# Register functions
-
-@app.register('pi')
-def pi():
-    return 3.141592
-
-
-@app.register('hello')
-def hello(name):
-    return 'Hello, ' + name
-
-
-@app.register('sum')
-def sum(a, b):
-    return a + b
-
-
-@app.register('list')
-def _list(a, b, c):
-    return [a, b, c]
-
-
-@app.register('dict')
-def _dict(key, value):
-    ret = {}
-    ret[key] = value
-    return ret
-
-
 class RainbowTest(unittest.TestCase):
 
     def setUp(self):
-        pass
+        # Register functions
 
-    def test_sum(self):
-        self.assertEqual(app.functions['sum'], sum)
+        @app.register('pi')
+        def pi():
+            return 3.141592
+
+        @app.register('hello')
+        def hello(name):
+            return 'Hello, ' + name
+
+        @app.register('sum')
+        def sum(a, b):
+            return a + b
+
+        @app.register('list')
+        def _list(a, b, c):
+            return [a, b, c]
+
+        @app.register('dict')
+        def _dict(key, value):
+            ret = {}
+            ret[key] = value
+            return ret
 
     def test_call_pi(self):
         ret = '{"return":3.141592}'
