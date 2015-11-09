@@ -1,3 +1,4 @@
+import json
 import unittest
 from rainbow import app, register
 
@@ -30,50 +31,50 @@ class RainbowTest(unittest.TestCase):
             return ret
 
     def test_call_pi(self):
-        ret = '{"result":3.141592}'
-        self.assertEqual(app.call('pi'), app.json_str(ret))
+        ret = json.loads('3.141592')
+        self.assertEqual(app.call('pi'), ret)
 
     def test_call_hello(self):
-        args = '["world"]'
-        ret = '{"result":"Hello, world"}'
-        self.assertEqual(app.call('hello', args=args), app.json_str(ret))
+        args = json.loads('["world"]')
+        ret = json.loads('"Hello, world"')
+        self.assertEqual(app.call('hello', args=args), ret)
 
     def test_call_hello_kw(self):
-        kwargs = '{"name":"world"}'
-        ret = '{"result":"Hello, world"}'
-        self.assertEqual(app.call('hello', kwargs=kwargs), app.json_str(ret))
+        kwargs = json.loads('{"name":"world"}')
+        ret = json.loads('"Hello, world"')
+        self.assertEqual(app.call('hello', kwargs=kwargs), ret)
 
     def test_call_sum(self):
-        kwargs = '{"a":3,"b":5}'
-        ret = '{"result":8}'
-        self.assertEqual(app.call('sum', kwargs=kwargs), app.json_str(ret))
+        kwargs = json.loads('{"a":3,"b":5}')
+        ret = json.loads('8')
+        self.assertEqual(app.call('sum', kwargs=kwargs), ret)
 
     def test_call_sum_kw(self):
-        args = '[3]'
-        kwargs = '{"b":5}'
-        ret = '{"result":8}'
-        self.assertEqual(app.call('sum', args=args, kwargs=kwargs), app.json_str(ret))
+        args = json.loads('[3]')
+        kwargs = json.loads('{"b":5}')
+        ret = json.loads('8')
+        self.assertEqual(app.call('sum', args=args, kwargs=kwargs), ret)
 
     def test_call_sum_akw(self):
-        args = '[3,5]'
-        ret = '{"result":8}'
-        self.assertEqual(app.call('sum', args=args), app.json_str(ret))
+        args = json.loads('[3,5]')
+        ret = json.loads('8')
+        self.assertEqual(app.call('sum', args=args), ret)
 
     def test_call_list(self):
-        kwargs = '{"b":null,"a":3,"c":"code","d":0.5}'
-        ret = '{"result":[3, null,"code",0.5]}'
-        self.assertEqual(app.call('list', kwargs=kwargs), app.json_str(ret))
+        kwargs = json.loads('{"b":null,"a":3,"c":"code","d":0.5}')
+        ret = json.loads('[3, null,"code",0.5]')
+        self.assertEqual(app.call('list', kwargs=kwargs), ret)
 
     def test_call_list_kw(self):
-        args = '[3,null]'
-        kwargs = '{"d":0.5,"c":"code"}'
-        ret = '{"result":[3,null,"code",0.5]}'
-        self.assertEqual(app.call('list', args=args, kwargs=kwargs), app.json_str(ret))
+        args = json.loads('[3,null]')
+        kwargs = json.loads('{"d":0.5,"c":"code"}')
+        ret = json.loads('[3,null,"code",0.5]')
+        self.assertEqual(app.call('list', args=args, kwargs=kwargs), ret)
 
     def test_call_dict(self):
-        kwargs = '{"key":"a","value":34}'
-        ret = '{"result":{"a":34}}'
-        self.assertEqual(app.call('dict', kwargs=kwargs), app.json_str(ret))
+        kwargs = json.loads('{"key":"a","value":34}')
+        ret = json.loads('{"a":34}')
+        self.assertEqual(app.call('dict', kwargs=kwargs), ret)
 
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()

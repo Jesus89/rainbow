@@ -34,31 +34,43 @@ def Singleton(cls):
 import json
 
 
+class ExampleError(Exception):
+    def __init__(self):
+        super(ExampleError, self).__init__('Example', 1234)
+
+
 @Singleton
 class Rainbow(object):
 
     def __init__(self):
         self.functions = {}
 
-    def json_str(self, data):
-        return json.dumps(json.loads(data))
-
     def register(self, key, function):
         self.functions[key] = function
 
-    def call(self, key, args=None, kwargs=None):
-        if args is None:
-            args = {}
-        else:
-            args = json.loads(args)
-        if kwargs is None:
-            kwargs = {}
-        else:
-            kwargs = json.loads(kwargs)
-        ret = {}
-        ret['result'] = self.functions[key](*args, **kwargs)
-        return json.dumps(ret)
+    def call(self, key, args={}, kwargs={}):
+        return self.functions[key](*args, **kwargs)
 
+    def json_rpc(self, request=None):
+        response = {u'jsonrpc': u'2.0'}
+        if self._verify_request(request):
+            if isinstance(request['params'], list):
+                args = request['params']
+            else:
+                args = {}
+            if isinstance(request['params'], dict):
+                kwargs = request['params']
+            else:
+                kwargs = {}
+            response[u'result'] = self.call(request['method'], args, kwargs)
+            response[u'id'] = request['id']
+        return response
+
+    def _verify_request(self, request):
+        return True
+
+    def json_str(self, data):
+        return json.dumps(json.loads(data))
 
 app = Rainbow()
 
