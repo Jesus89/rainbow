@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Rainbow Client Test</title>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript">
+            var ws;
+            function wsconnect() {
+                if ("WebSocket" in window) {
+                    ws = new WebSocket("ws://".concat($("#host").val()));
+                    ws.onopen = function() {
+                        // alert("Connected!");
+                        $("#log").empty();
+                        request = {jsonrpc: "2.0",
+                                   method: "_functions",
+                                   id: 1234};
+                        ws.send(JSON.stringify(request));
+                    };
+                    ws.onmessage = function (event) {
+                        var response = JSON.parse(event.data);
+                        var method_combo = document.getElementById("method_combo");
+                        if (response.id === 1234) {
+                            while(method_combo.options.length) {
+                                method_combo.remove(0);
+                            }
+                            for (var item in response.result) {
+                                var option = document.createElement("option");
+                                option.text = response.result[item];
+                                method_combo.add(option, null);
+                            }
+                        }
+                        else {
+                            var selected_method = method_combo.options[method_combo.selectedIndex].text;
+                            $("#log").append("<p>"+"-->  "+selected_method+" ( "+$("#params").val()+" )"+"</p>");
+                            if (response.result !== undefined) {
+                                $("#log").append("<p>"+"<--  "+response.result+"</p>");
+                            }
+                            if (response.error !== undefined) {
+                                if (response.error.data === undefined) {
+                                    $("#log").append("<p>"+"<--  "+response.error.message+"</p>");
+                                }
+                                else {
+                                    $("#log").append("<p>"+"<--  "+response.error.message+": "+response.error.data+"</p>");
+                                }
+                            }
+                        }
+                    };
+                    ws.onclose = function() {
+                        //alert("Disconnected");
+                        $("#log").empty();
+                        while(method_combo.options.length) {
+                            method_combo.remove(0);
+                        }
+                    };
+                }
+                else {
+                    alert("WebSocket NOT supported by your Browser!");
+                }
+            }
+            function wssend() {
+                $("#log").empty();
+                var method_combo = document.getElementById("method_combo");
+                var selected_method = method_combo.options[method_combo.selectedIndex].text;
+                request = {jsonrpc: "2.0",
+                           method: selected_method,
+                           params: JSON.parse($("#params").val()),
+                           id: 1};
+                ws.send(JSON.stringify(request));
+            }
+        </script>
+    </head>
+<body>
+    <h2>Rainbow Client</h2>
+    <h3>Connection</h3>
+    <div>Server</div>
+    <div>
+        <input type="text" name="host" value="0.0.0.0:8080" id="host">
+        <input type="submit" value="Connect" onclick="wsconnect()">
+    </div>
+    <h3>Request</h3>
+    <div>
+        <select name="method_combo" id="method_combo"></select>
+        <input type="submit" value="Execute"  onclick="wssend()">
+    </div>
+    </br>
+    <textarea name="params" id="params">[1, 2]</textarea>
+    <h3>Response</h3>
+    <div id="log"></div>
+</body>
+</html>
