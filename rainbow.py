@@ -68,7 +68,7 @@ import json
 
 
 @Singleton
-class Rainbow(object):
+class Dealer(object):
 
     def __init__(self):
         self.functions = {}
@@ -128,7 +128,7 @@ class Rainbow(object):
                         'id': None}
             if isinstance(e, InternalError):
                 response['error']['data'] = e.data
-            if isinstance(e, MethodNotFound):
+            if isinstance(e, MethodNotFound) or isinstance(e, InvalidParams):
                 response['id'] = request['id']
         else:
             if 'id' in request:
@@ -176,12 +176,12 @@ class Rainbow(object):
             raise InvalidRequest
 
 
-app = Rainbow()
+dealer = Dealer()
 
 
 # Public methods
 def register(key):
     def decorator(function):
-        app.register(key, function)
+        dealer.register(key, function)
         return function
     return decorator
