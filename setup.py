@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 from setuptools import setup
 
@@ -14,5 +13,7 @@ setup(name='Rainbow',
       url='https://github.com/bqlabs/rainbow',
       license=rainbow.__license__,
       py_modules=['rainbow'],
-      extra_requires=['nose>=1.3.1']
+      install_requires=['ws4py>=0.3.4',
+                        'gevent>=1.0.2'],
+      extras_require=dict(develop=['nose>=1.3.1'])
       )

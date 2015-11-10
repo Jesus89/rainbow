@@ -23,13 +23,18 @@ def Singleton(cls):
             return cls_w._instance
 
         def __init__(cls, *args, **kwargs):
-            if cls_w._instance.__initialized:
-                return
-            super(cls_w, cls).__init__(*args, **kwargs)
-            cls_w._instance.__initialized = True
+            if not cls_w._instance.__initialized:
+                super(cls_w, cls).__init__(*args, **kwargs)
+                cls_w._instance.__initialized = True
 
     cls_w.__name__ = cls.__name__
     return cls_w
+
+
+################################################################################
+# Dealer: is responsible for routing a call originating from the Caller to the #
+#         Callee and route back results or errors                              #
+################################################################################
 
 
 class JSONRPCException(Exception):
@@ -81,9 +86,11 @@ class Dealer(object):
 
     def process_request(self, request):
         """
-        Process request according to JSON-RPC 2.0 Specs <http://www.jsonrpc.org/specification>
+        Process request according to JSON-RPC 2.0 Specs:
+            <http://www.jsonrpc.org/specification>
         Input and output data types are JSON string
         """
+        response = None
         try:
             request = json.loads(request)
         except:
@@ -119,6 +126,7 @@ class Dealer(object):
                 return json.dumps(response)
 
     def _single_request(self, request):
+        response = None
         try:
             self._verify_request(request)
             result = self._execute_request(request)
@@ -148,18 +156,18 @@ class Dealer(object):
             raise InvalidRequest
 
     def _execute_request(self, request):
+        args = {}
+        kwargs = {}
+        result = None
         if 'params' in request and isinstance(request['params'], list):
             args = request['params']
-        else:
-            args = {}
         if 'params' in request and isinstance(request['params'], dict):
             kwargs = request['params']
-        else:
-            kwargs = {}
         result = self.call(request['method'], args, kwargs)
         return result
 
     def call(self, key, args={}, kwargs={}):
+        result = None
         if isinstance(key, unicode):
             if key in self.functions:
                 try:
@@ -178,10 +186,50 @@ class Dealer(object):
 
 dealer = Dealer()
 
+try:
+    import sys
+    if 'threading' in sys.modules:
+        del sys.modules['threading']
+    from gevent import monkey
+    monkey.patch_all()
+    from ws4py.websocket import WebSocket
+    from ws4py.server.geventserver import WSGIServer
+    from ws4py.server.wsgiutils import WebSocketWSGIApplication
 
-# Public methods
+    class DealerWebSocket(WebSocket):
+        def received_message(self, request):
+            response = dealer.process_request(request.data)
+            if response is not None:
+                self.send(response)
+except:
+    pass
+
+
+################################################################################
+# Public methods: register, run                                                #
+################################################################################
+
+
 def register(key):
     def decorator(function):
         dealer.register(key, function)
         return function
     return decorator
+
+
+def run(host='0.0.0.0', port=8080, debug=False):
+    print 'Running server {0}:{1}'.format(host, port)
+    try:
+        server = WSGIServer((host, port), WebSocketWSGIApplication(handler_cls=DealerWebSocket))
+        server.serve_forever()
+    except KeyboardInterrupt:
+        server.close()
+
+
+if __name__ == '__main__':  # pragma: no cover
+    # Register function
+    @register('add')
+    def subtract(a, b):
+        return a + b
+    # Start server
+    run(host='0.0.0.0', port=8080)

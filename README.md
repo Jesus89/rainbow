@@ -7,3 +7,22 @@ Work in progress
 ```
 
 Micro-framework for Python RPC+P&S communication over WebSockets
+
+
+## Installation
+
+```bash
+python setup.py install
+```
+
+## Example
+
+```
+from rainbow import register, run
+
+@register('add')
+def subtract(a, b):
+    return a + b
+
+run(host='0.0.0.0', port=8080)
+```
