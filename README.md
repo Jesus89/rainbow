@@ -21,7 +21,7 @@ python setup.py install
 from rainbow import register, run
 
 @register('add')
-def subtract(a, b):
+def add(a, b):
     return a + b
 
 run(host='0.0.0.0', port=8080)
