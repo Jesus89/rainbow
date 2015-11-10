@@ -169,7 +169,9 @@ class Dealer(object):
     def call(self, key, args={}, kwargs={}):
         result = None
         if isinstance(key, unicode):
-            if key in self.functions:
+            if key == '_functions':
+                return self.functions.keys()
+            elif key in self.functions:
                 try:
                     result = self.functions[key](*args, **kwargs)
                 except TypeError as e:
@@ -227,9 +229,19 @@ def run(host='0.0.0.0', port=8080, debug=False):
 
 
 if __name__ == '__main__':  # pragma: no cover
+
     # Register function
     @register('add')
-    def subtract(a, b):
+    def add(a, b):
         return a + b
+
+    @register('sub')
+    def sub(a, b):
+        return a - b
+
+    # Launch client
+    import webbrowser
+    webbrowser.open('test/client.html')
+
     # Start server
     run(host='0.0.0.0', port=8080)
