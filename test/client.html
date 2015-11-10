@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Rainbow Client Test</title>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript">
+            var ws;
+            function wsconnect() {
+                if ("WebSocket" in window) {
+                    ws = new WebSocket("ws://".concat($('#host').val()));
+                    ws.onopen = function() {
+                        alert("Connected!");
+                    };
+                    ws.onmessage = function (event) {
+                        $("#log").append("<p>"+"-> "+$('#method').val()+"( "+$('#params').val()+" )"+"</p>");
+                        var response = JSON.parse(event.data);
+                        if (response.result !== undefined) {
+                            $("#log").append("<p>"+"<- "+response.result+"</p>");
+                        }
+                        if (response.error !== undefined) {
+                            if (response.error.data === undefined) {
+                                $("#log").append("<p>"+"<- "+response.error.message+"</p>");
+                            }
+                            else {
+                                $("#log").append("<p>"+"<- "+response.error.message+": "+response.error.data+"</p>");
+                            }
+                        }
+                    };
+
+                    ws.onclose = function() {
+                        alert("Disconnected");
+                    };
+                }
+                else {
+                    alert("WebSocket NOT supported by your Browser!");
+                }
+            }
+            function wssend() {
+                $("#log").empty();
+                request = { jsonrpc: '2.0',
+                            method: $('#method').val(),
+                            params: JSON.parse($('#params').val()),
+                            id: 1
+                          };
+                ws.send(JSON.stringify(request));
+            }
+        </script>
+    </head>
+<body>
+    <h2>Rainbow Client</h2>
+    <h3>Connection</h3>
+    <div>Server</div>
+    <div><textarea name='host' id="host">0.0.0.0:8080</textarea></div>
+    <div><input type='submit' value='Connect' onclick='wsconnect()'></div>
+    <h3>Request</h3>
+    <div>Method</div>
+    <div><textarea name='method' id="method">add</textarea></div>
+    <div>Params</div>
+    <div><textarea name='params' id="params">[1, 2]</textarea></div>
+    <div><input type='submit' value='Execute'  onclick="wssend()"></div>
+    <h3>Response</h3>
+    <div id="log"></div>
+</body>
+</html>
