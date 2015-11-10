@@ -63,8 +63,10 @@
                 var selected_method = method_combo.options[method_combo.selectedIndex].text;
                 request = {jsonrpc: "2.0",
                            method: selected_method,
-                           params: JSON.parse($("#params").val()),
                            id: 1};
+                if ($("#params").val() !== "") {
+                    request["params"] = JSON.parse($("#params").val());
+                }
                 ws.send(JSON.stringify(request));
             }
         </script>
