@@ -4,19 +4,22 @@
         <title>Rainbow Client Test</title>
         <script type="text/javascript" src="http://code.jquery.com/jquery-1.4.2.min.js"></script>
         <script type="text/javascript">
-            var ws;
+            var ws_dealer;
+            var ws_broker;
             function wsconnect() {
                 if ("WebSocket" in window) {
-                    ws = new WebSocket("ws://".concat($("#host").val()));
-                    ws.onopen = function() {
-                        // alert("Connected!");
+
+                    // Dealer
+                    ws_dealer = new WebSocket("ws://"+$("#host").val()+":8080");
+                    ws_dealer.onopen = function() {
+                        //alert("Dealer connected");
                         $("#log").empty();
                         request = {jsonrpc: "2.0",
                                    method: "_functions",
                                    id: 1234};
-                        ws.send(JSON.stringify(request));
-                    };
-                    ws.onmessage = function (event) {
+                        ws_dealer.send(JSON.stringify(request));
+                    }
+                    ws_dealer.onmessage = function (event) {
                         var response = JSON.parse(event.data);
                         var method_combo = document.getElementById("method_combo");
                         if (response.id === 1234) {
@@ -45,12 +48,24 @@
                             }
                         }
                     };
-                    ws.onclose = function() {
-                        //alert("Disconnected");
+                    ws_dealer.onclose = function() {
+                        //alert("Dealer disconnected");
                         $("#log").empty();
                         while(method_combo.options.length) {
                             method_combo.remove(0);
                         }
+                    };
+
+                    // Broker
+                    ws_broker = new WebSocket("ws://"+$("#host").val()+":8081");
+                    ws_broker.onopen = function() {
+                        //alert("Broker connected");
+                    };
+                    ws_broker.onmessage = function(event) {
+                        alert(event.data);
+                    };
+                    ws_broker.onclose = function() {
+                        //alert("Broker connected");
                     };
                 }
                 else {
@@ -67,7 +82,7 @@
                 if ($("#params").val() !== "") {
                     request["params"] = JSON.parse($("#params").val());
                 }
-                ws.send(JSON.stringify(request));
+                ws_dealer.send(JSON.stringify(request));
             }
         </script>
     </head>
@@ -76,7 +91,7 @@
     <h3>Connection</h3>
     <div>Server</div>
     <div>
-        <input type="text" name="host" value="0.0.0.0:8080" id="host">
+        <input type="text" name="host" value="0.0.0.0" id="host">
         <input type="submit" value="Connect" onclick="wsconnect()">
     </div>
     <h3>Request</h3>

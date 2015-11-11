@@ -208,7 +208,72 @@ except:
 
 
 ################################################################################
-# Public methods: register, run                                                #
+# Broker: is responsible for sending the event information to the subscribers  #
+#         when a topic is published                                            #
+################################################################################
+
+
+import time
+import gevent
+from gevent_zeromq import zmq
+from geventwebsocket.handler import WebSocketHandler
+
+
+@Singleton
+class Broker(object):
+    def __init__(self):
+        context = zmq.Context()
+        gevent.spawn(zmq_server, context)
+        WSGIServer(('0.0.0.0', 8081), BrokerWebSocket(context),
+                   handler_class=WebSocketHandler).start()
+
+        # Event socket
+        self.socket = context.socket(zmq.PUB)
+        self.socket.connect('tcp://0.0.0.0:5000')
+
+    def publish(self, event=None, data=None):
+        topic = {'time': time.time(),
+                 'event': event,
+                 'data': data}
+        self.socket.send(json.dumps(topic))
+
+
+def zmq_server(context):
+    """
+    Funnel messages coming from the external tcp socket to an inproc socket
+    """
+    sock_incoming = context.socket(zmq.SUB)
+    sock_outgoing = context.socket(zmq.PUB)
+    sock_incoming.bind('tcp://*:5000')
+    sock_outgoing.bind('inproc://queue')
+    sock_incoming.setsockopt(zmq.SUBSCRIBE, "")
+    while True:
+        msg = sock_incoming.recv()
+        sock_outgoing.send(msg)
+
+
+class BrokerWebSocket(object):
+    """
+    Funnel messages coming from an inproc zmq socket to the websocket
+    """
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, environ, start_response):
+        ws = environ['wsgi.websocket']
+        sock = self.context.socket(zmq.SUB)
+        sock.setsockopt(zmq.SUBSCRIBE, "")
+        sock.connect('inproc://queue')
+        while True:
+            msg = sock.recv()
+            ws.send(msg)
+
+
+broker = Broker()
+
+
+################################################################################
+# Public methods: register, publish, run                                       #
 ################################################################################
 
 
@@ -219,13 +284,30 @@ def register(key):
     return decorator
 
 
-def run(host='0.0.0.0', port=8080, debug=False):
-    print 'Running server {0}:{1}'.format(host, port)
+def publish(event=None, data=None):
+    broker.publish(event, data)
+
+
+def run(host='0.0.0.0', webclient=False, webbroser=False, debug=False):
+    print 'Running server {0}'.format(host)
+
+    if webclient:
+        import os
+        import paste.urlparser
+        http_server = WSGIServer(
+            ('0.0.0.0', 8000),
+            paste.urlparser.StaticURLParser(os.path.dirname('test/')))
+        http_server.start()
+        if webbroser:
+            import webbrowser
+            webbrowser.open('http://0.0.0.0:8000/client.html')
+
     try:
-        server = WSGIServer((host, port), WebSocketWSGIApplication(handler_cls=DealerWebSocket))
-        server.serve_forever()
+        dealer_server = WSGIServer(
+            (host, 8080), WebSocketWSGIApplication(handler_cls=DealerWebSocket))
+        dealer_server.serve_forever()
     except KeyboardInterrupt:
-        server.close()
+        dealer_server.close()
 
 
 if __name__ == '__main__':  # pragma: no cover
@@ -233,15 +315,13 @@ if __name__ == '__main__':  # pragma: no cover
     # Register function
     @register('add')
     def add(a, b):
+        publish('event.add', '{0} + {1}'.format(a, b))
         return a + b
 
     @register('sub')
     def sub(a, b):
+        publish('event.sub', '{0} - {1}'.format(a, b))
         return a - b
 
-    # Launch client
-    import webbrowser
-    webbrowser.open('test/client.html')
-
     # Start server
-    run(host='0.0.0.0', port=8080)
+    run(host='0.0.0.0', webclient=True, webbroser=True)
