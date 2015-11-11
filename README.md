@@ -14,6 +14,7 @@ Micro-framework for Python RPC+P&S communication over WebSockets
 ## Installation
 
 ```bash
+sudo apt-get install python-dev libzmq-dev
 python setup.py install
 ```
 
@@ -28,7 +29,19 @@ from rainbow import register, run
 def add(a, b):
     return a + b
 
-run(host='0.0.0.0', port=8080)
+run(host='0.0.0.0')
+```
+
+Publish Example
+
+```
+from rainbow import register, publish, run
+
+@register('pub')
+def pub():
+    publish('event', 'data')
+
+run(host='0.0.0.0')
 ```
 
 Threading example
@@ -36,7 +49,7 @@ Threading example
 ```
 import time
 import threading
-from rainbow import register, run
+from rainbow import register, publish, run
 
 running = False
 
@@ -51,12 +64,13 @@ def _start():
     global running
     while running:
         print "Hello, world!"
-        time.sleep(0.1)
+        publish('event.hello', "Hello, world!")
+        time.sleep(3)
 
 @register('stop')
 def stop():
     global running
     running = False
 
-run(host='0.0.0.0', port=8080)
+run(host='0.0.0.0')
 ```
