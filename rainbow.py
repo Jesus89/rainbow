@@ -189,7 +189,7 @@ class Dealer(object):
 dealer = Dealer()
 
 try:
-    from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
+    from geventwebsocket import WebSocketApplication
 
     class DealerApplication(WebSocketApplication):
         def on_message(self, message):
@@ -214,15 +214,15 @@ try:
 
     @Singleton
     class Broker(object):
-        def __init__(self):
+        def __init__(self, host='0.0.0.0'):
             context = zmq.Context()
             gevent.spawn(zmq_server, context)
-            gevent.pywsgi.WSGIServer(('0.0.0.0', 8081), BrokerWebSocket(context),
+            gevent.pywsgi.WSGIServer((host, 8081), BrokerWebSocket(context),
                                      handler_class=WebSocketHandler).start()
 
             # Event socket
             self.socket = context.socket(zmq.PUB)
-            self.socket.connect('tcp://0.0.0.0:5000')
+            self.socket.connect('tcp://' + host + ':5000')
 
         def publish(self, event=None, data=None):
             topic = {'time': time.time(),
@@ -258,9 +258,6 @@ try:
             while True:
                 msg = sock.recv()
                 ws.send(msg)
-
-    broker = Broker()
-
 except:
     pass
 
@@ -278,6 +275,7 @@ def register(key):
 
 
 def publish(event=None, data=None):
+    global broker
     broker.publish(event, data)
 
 
@@ -288,16 +286,19 @@ def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
         import os
         import paste.urlparser
         http_server = gevent.pywsgi.WSGIServer(
-            ('0.0.0.0', 8000),
+            (host, 8000),
             paste.urlparser.StaticURLParser(os.path.dirname('test/')))
         http_server.start()
         if webbrowser:
             import webbrowser
-            webbrowser.open('http://0.0.0.0:8000/client.html')
+            webbrowser.open('http://' + host + ':8000/client.html')
 
     try:
+        global broker
+        broker = Broker(host)
         from collections import OrderedDict
-        dealer_server = WebSocketServer(('0.0.0.0', 8080),
+        from geventwebsocket import WebSocketServer, Resource
+        dealer_server = WebSocketServer((host, 8080),
                                         Resource(OrderedDict({'/': DealerApplication})),
                                         debug=debug)
         dealer_server.serve_forever()
