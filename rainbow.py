@@ -207,8 +207,8 @@ except:
 
 
 try:
-    import time
     import gevent
+    import datetime
     from gevent_zeromq import zmq
     from geventwebsocket.handler import WebSocketHandler
 
@@ -225,7 +225,7 @@ try:
             self.socket.connect('tcp://' + host + ':5000')
 
         def publish(self, event=None, data=None):
-            topic = {'time': time.time(),
+            topic = {'time': datetime.datetime.now().isoformat(),
                      'event': event,
                      'data': data}
             self.socket.send(json.dumps(topic))
