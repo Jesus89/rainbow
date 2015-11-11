@@ -288,10 +288,10 @@ def publish(event=None, data=None):
     broker.publish(event, data)
 
 
-def run(host='0.0.0.0', webclient=False, webbroser=False, debug=False):
+def run(host='0.0.0.0', webserver=False, webbroser=False, debug=False):
     print 'Running server {0}'.format(host)
 
-    if webclient:
+    if webserver:
         import os
         import paste.urlparser
         http_server = WSGIServer(
@@ -324,4 +324,4 @@ if __name__ == '__main__':  # pragma: no cover
         return a - b
 
     # Start server
-    run(host='0.0.0.0', webclient=True, webbroser=True)
+    run(host='0.0.0.0', webserver=True, webbroser=True)

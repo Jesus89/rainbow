@@ -14,6 +14,8 @@ setup(name='Rainbow',
       license=rainbow.__license__,
       py_modules=['rainbow'],
       install_requires=['ws4py>=0.3.4',
-                        'gevent>=1.0.2'],
+                        'gevent>=1.0.2',
+                        'gevent-zeromq>=0.2.5',
+                        'gevent-websocket>=0.9.5'],
       extras_require=dict(develop=['nose>=1.3.1'])
       )
