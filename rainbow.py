@@ -213,63 +213,63 @@ except:
 ################################################################################
 
 
-import time
-import gevent
-from gevent_zeromq import zmq
-from geventwebsocket.handler import WebSocketHandler
+try:
+    import time
+    import gevent
+    from gevent_zeromq import zmq
+    from geventwebsocket.handler import WebSocketHandler
 
+    @Singleton
+    class Broker(object):
+        def __init__(self):
+            context = zmq.Context()
+            gevent.spawn(zmq_server, context)
+            WSGIServer(('0.0.0.0', 8081), BrokerWebSocket(context),
+                       handler_class=WebSocketHandler).start()
 
-@Singleton
-class Broker(object):
-    def __init__(self):
-        context = zmq.Context()
-        gevent.spawn(zmq_server, context)
-        WSGIServer(('0.0.0.0', 8081), BrokerWebSocket(context),
-                   handler_class=WebSocketHandler).start()
+            # Event socket
+            self.socket = context.socket(zmq.PUB)
+            self.socket.connect('tcp://0.0.0.0:5000')
 
-        # Event socket
-        self.socket = context.socket(zmq.PUB)
-        self.socket.connect('tcp://0.0.0.0:5000')
+        def publish(self, event=None, data=None):
+            topic = {'time': time.time(),
+                     'event': event,
+                     'data': data}
+            self.socket.send(json.dumps(topic))
 
-    def publish(self, event=None, data=None):
-        topic = {'time': time.time(),
-                 'event': event,
-                 'data': data}
-        self.socket.send(json.dumps(topic))
-
-
-def zmq_server(context):
-    """
-    Funnel messages coming from the external tcp socket to an inproc socket
-    """
-    sock_incoming = context.socket(zmq.SUB)
-    sock_outgoing = context.socket(zmq.PUB)
-    sock_incoming.bind('tcp://*:5000')
-    sock_outgoing.bind('inproc://queue')
-    sock_incoming.setsockopt(zmq.SUBSCRIBE, "")
-    while True:
-        msg = sock_incoming.recv()
-        sock_outgoing.send(msg)
-
-
-class BrokerWebSocket(object):
-    """
-    Funnel messages coming from an inproc zmq socket to the websocket
-    """
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self, environ, start_response):
-        ws = environ['wsgi.websocket']
-        sock = self.context.socket(zmq.SUB)
-        sock.setsockopt(zmq.SUBSCRIBE, "")
-        sock.connect('inproc://queue')
+    def zmq_server(context):
+        """
+        Funnel messages coming from the external tcp socket to an inproc socket
+        """
+        sock_incoming = context.socket(zmq.SUB)
+        sock_outgoing = context.socket(zmq.PUB)
+        sock_incoming.bind('tcp://*:5000')
+        sock_outgoing.bind('inproc://queue')
+        sock_incoming.setsockopt(zmq.SUBSCRIBE, "")
         while True:
-            msg = sock.recv()
-            ws.send(msg)
+            msg = sock_incoming.recv()
+            sock_outgoing.send(msg)
 
+    class BrokerWebSocket(object):
+        """
+        Funnel messages coming from an inproc zmq socket to the websocket
+        """
+        def __init__(self, context):
+            self.context = context
 
-broker = Broker()
+        def __call__(self, environ, start_response):
+            ws = environ['wsgi.websocket']
+            sock = self.context.socket(zmq.SUB)
+            sock.setsockopt(zmq.SUBSCRIBE, "")
+            sock.connect('inproc://queue')
+            while True:
+                msg = sock.recv()
+                ws.send(msg)
+
+    broker = Broker()
+
+except:
+    pass
 
 
 ################################################################################
@@ -288,7 +288,7 @@ def publish(event=None, data=None):
     broker.publish(event, data)
 
 
-def run(host='0.0.0.0', webserver=False, webbroser=False, debug=False):
+def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
     print 'Running server {0}'.format(host)
 
     if webserver:
@@ -298,7 +298,7 @@ def run(host='0.0.0.0', webserver=False, webbroser=False, debug=False):
             ('0.0.0.0', 8000),
             paste.urlparser.StaticURLParser(os.path.dirname('test/')))
         http_server.start()
-        if webbroser:
+        if webbrowser:
             import webbrowser
             webbrowser.open('http://0.0.0.0:8000/client.html')
 
@@ -324,4 +324,4 @@ if __name__ == '__main__':  # pragma: no cover
         return a - b
 
     # Start server
-    run(host='0.0.0.0', webserver=True, webbroser=True)
+    run(host='0.0.0.0', webserver=True, webbrowser=True)
