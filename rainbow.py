@@ -189,20 +189,13 @@ class Dealer(object):
 dealer = Dealer()
 
 try:
-    import sys
-    if 'threading' in sys.modules:
-        del sys.modules['threading']
-    from gevent import monkey
-    monkey.patch_all()
-    from ws4py.websocket import WebSocket
-    from ws4py.server.geventserver import WSGIServer
-    from ws4py.server.wsgiutils import WebSocketWSGIApplication
+    from geventwebsocket import WebSocketServer, WebSocketApplication, Resource
 
-    class DealerWebSocket(WebSocket):
-        def received_message(self, request):
-            response = dealer.process_request(request.data)
+    class DealerApplication(WebSocketApplication):
+        def on_message(self, message):
+            response = dealer.process_request(message)
             if response is not None:
-                self.send(response)
+                self.ws.send(response)
 except:
     pass
 
@@ -224,8 +217,8 @@ try:
         def __init__(self):
             context = zmq.Context()
             gevent.spawn(zmq_server, context)
-            WSGIServer(('0.0.0.0', 8081), BrokerWebSocket(context),
-                       handler_class=WebSocketHandler).start()
+            gevent.pywsgi.WSGIServer(('0.0.0.0', 8081), BrokerWebSocket(context),
+                                     handler_class=WebSocketHandler).start()
 
             # Event socket
             self.socket = context.socket(zmq.PUB)
@@ -294,7 +287,7 @@ def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
     if webserver:
         import os
         import paste.urlparser
-        http_server = WSGIServer(
+        http_server = gevent.pywsgi.WSGIServer(
             ('0.0.0.0', 8000),
             paste.urlparser.StaticURLParser(os.path.dirname('test/')))
         http_server.start()
@@ -303,11 +296,15 @@ def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
             webbrowser.open('http://0.0.0.0:8000/client.html')
 
     try:
-        dealer_server = WSGIServer(
-            (host, 8080), WebSocketWSGIApplication(handler_cls=DealerWebSocket))
+        from collections import OrderedDict
+        dealer_server = WebSocketServer(('0.0.0.0', 8080),
+                                        Resource(OrderedDict({'/': DealerApplication})),
+                                        debug=debug)
         dealer_server.serve_forever()
     except KeyboardInterrupt:
         dealer_server.close()
+    except Exception:
+        pass
 
 
 if __name__ == '__main__':  # pragma: no cover
