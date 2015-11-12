@@ -88,7 +88,7 @@
                         request["params"] = JSON.parse($("#params").val());
                     }
                     catch (e) {
-                        $("#params").val("Invalid params");
+                        $("#response").val("Invalid params");
                     }
                 }
                 ws_dealer.send(JSON.stringify(request));

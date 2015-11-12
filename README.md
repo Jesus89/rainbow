@@ -11,7 +11,7 @@ Micro-framework for Python RPC+P&S communication over WebSockets
 
 ```bash
 sudo apt-get install python-dev libzmq-dev
-python setup.py install
+pip install pyrainbow
 ```
 
 ## Example
