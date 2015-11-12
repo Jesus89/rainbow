@@ -14,7 +14,7 @@
                     ws_dealer.onopen = function() {
                         //alert("Dealer connected");
                         $("#log").empty();
-                        $("#log").append("</br></br>")
+                        $("#log").append("</br></br>");
                         request = {jsonrpc: "2.0",
                                    method: "_functions",
                                    id: 1234};
@@ -53,7 +53,7 @@
                     ws_dealer.onclose = function() {
                         //alert("Dealer disconnected");
                         $("#log").empty();
-                        $("#log").append("</br></br>")
+                        $("#log").append("</br></br>");
                         while(method_combo.options.length) {
                             method_combo.remove(0);
                         }
@@ -93,32 +93,49 @@
                 }
                 ws_dealer.send(JSON.stringify(request));
             }
+            function paramsclear() {
+                $("#params").val("");
+                $("#browse").val("");
+            }
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var output = event.target.result;
+                $("#params").val(output);
+            }
+            function readfile(input) {
+                if(input.files && input.files[0]) {
+                    reader.readAsText(input.files[0]);
+                }
+            }
         </script>
     </head>
-<body>
-    <h2>Rainbow Client</h2>
-    <h3>Connection</h3>
-    <div>Server</div>
-    <div>
-        <input type="text" name="host" value="0.0.0.0" id="host">
-        <input type="submit" value="Connect" onclick="wsconnect()">
-    </div>
-    <h3>Request</h3>
-    <div>
-        <select name="method_combo" id="method_combo"></select>
-        <input type="submit" value="Execute"  onclick="wssend()">
-    </div>
-    </br>
-    <textarea name="params" id="params">[1, 2]</textarea>
-    <h3>Response</h3>
-    <div id="log"></br></br></div>
-    <h3>Events</h3>
-    <table border="1" id="events">
-        <tr>
-            <th>Time</th>
-            <th>Event</th>
-            <th>Data</th>
-        </tr>
-    </table>
-</body>
+    <body>
+        <h2>Rainbow Client</h2>
+        <h3>Connection</h3>
+        <div>
+            <input type="text" name="host" value="0.0.0.0" id="host">
+            <input type="submit" value="Connect" onclick="wsconnect()">
+        </div>
+        <h3>Request</h3>
+        <div>
+            <select name="method_combo" id="method_combo"></select>
+            <input type="submit" value="Execute" onclick="wssend()">
+        </div>
+        </br>
+        <textarea name="params" rows="3" cols="38" id="params">[1, 2]</textarea>
+        <div>
+            <input type="submit" value="Clear" onclick="paramsclear()">
+            <input type="file" onchange="readfile(this)" id="browse">
+        </div>
+        <h3>Response</h3>
+        <div id="log"></br></br></div>
+        <h3>Events</h3>
+        <table border="1" id="events">
+            <tr>
+                <th>Time</th>
+                <th>Event</th>
+                <th>Data</th>
+            </tr>
+        </table>
+    </body>
 </html>
