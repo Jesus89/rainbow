@@ -16,9 +16,9 @@ python setup.py install
 
 ## Example
 
-Basic Example
+Basic example
 
-```
+```python
 from rainbow import register, run
 
 @register('add')
@@ -28,9 +28,9 @@ def add(a, b):
 run(host='0.0.0.0')
 ```
 
-Publish Example
+Publish example
 
-```
+```python
 from rainbow import register, publish, run
 
 @register('pub')
@@ -40,4 +40,4 @@ def pub():
 run(host='0.0.0.0')
 ```
 
-Check more amazing [examples](examples/installation/ubuntu.md)!
+Check more amazing [examples](https://github.com/bqlabs/rainbow/tree/develop/examples)!
