@@ -93,6 +93,12 @@
                 }
                 ws_dealer.send(JSON.stringify(request));
             }
+            function eventsclear() {
+                var table = document.getElementById("events");
+                while(table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+            }
             function paramsclear() {
                 $("#params").val("");
                 $("#browse").val("");
@@ -123,6 +129,7 @@
         </div>
         </br>
         <textarea name="params" rows="3" cols="38" id="params">[1, 2]</textarea>
+        </br></br>
         <div>
             <input type="submit" value="Clear" onclick="paramsclear()">
             <input type="file" onchange="readfile(this)" id="browse">
@@ -130,6 +137,8 @@
         <h3>Response</h3>
         <div id="log"></br></br></div>
         <h3>Events</h3>
+        <input type="submit" value="Clear" onclick="eventsclear()">
+        </br></br>
         <table border="1" id="events">
             <tr>
                 <th>Time</th>
