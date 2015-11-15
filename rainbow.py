@@ -287,11 +287,11 @@ def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
         import paste.urlparser
         http_server = gevent.pywsgi.WSGIServer(
             (host, 8000),
-            paste.urlparser.StaticURLParser(os.path.dirname('test/')))
+            paste.urlparser.StaticURLParser(os.path.dirname('examples/')))
         http_server.start()
         if webbrowser:
             import webbrowser
-            webbrowser.open('http://' + host + ':8000/client.html')
+            webbrowser.open('http://' + host + ':8000')
 
     try:
         global broker
