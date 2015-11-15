@@ -1,6 +1,7 @@
 import json
 import unittest
-from rainbow import dealer, register
+from rainbow import register
+from rainbow.dealer import dealer
 
 
 class RainbowTest(unittest.TestCase):
