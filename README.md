@@ -1,10 +1,11 @@
-# Rainbow
+![][rainbow]
 
 [![License](http://img.shields.io/:license-gpl-blue.svg?style=flat)](http://opensource.org/licenses/GPL-2.0) [![Build Status](https://travis-ci.org/bqlabs/rainbow.svg)](https://travis-ci.org/bqlabs/rainbow)
 
 Micro-framework for Python RPC+P&S communication over WebSockets
 * Based on the [WAMP](http://wamp-proto.org/why/) protocol.
 * Compatible with [JSON-RPC 2.0](http://www.jsonrpc.org/specification).
+* JSON Events using the [Publish/Subscribe pattern](http://rfc.zeromq.org/spec:29).
 * Syntax inspired by [Bottle](https://github.com/bottlepy/bottle).
 
 ## Installation
@@ -41,3 +42,5 @@ run(host='0.0.0.0')
 ```
 
 Check more amazing [examples](https://github.com/bqlabs/rainbow/tree/develop/examples)!
+
+[rainbow]: doc/images/rainbow.png
