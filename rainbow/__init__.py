@@ -11,11 +11,14 @@ __license__ = 'GPLv2'
 
 __version__ = '0.0.3'
 
-from rainbow.dealer import Dealer
-from rainbow.broker import Broker
+try:
+    from rainbow.dealer import Dealer
+    from rainbow.broker import Broker
 
-dealer = Dealer()
-broker = Broker()
+    dealer = Dealer()
+    broker = Broker()
+except:
+    pass
 
 
 def register(key):
