@@ -5,6 +5,7 @@
 Micro-framework for Python RPC+P&S communication over WebSockets
 * Based on the [WAMP](http://wamp-proto.org/why/) protocol.
 * Compatible with [JSON-RPC 2.0](http://www.jsonrpc.org/specification).
+* JSON Events using the [Publish/Subscribe pattern](http://rfc.zeromq.org/spec:29).
 * Syntax inspired by [Bottle](https://github.com/bottlepy/bottle).
 
 ## Installation

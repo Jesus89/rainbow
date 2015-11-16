@@ -7,10 +7,7 @@ __copyright__ = 'Copyright (c) 2015 Mundo Reader S.L.'
 __license__ = 'GPLv2'
 
 import json
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 from geventwebsocket import WebSocketApplication, WebSocketServer, Resource
 
 from rainbow.singleton import Singleton
