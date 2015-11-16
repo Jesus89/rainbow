@@ -6,12 +6,9 @@ __email__ = 'jesus.arroyo@bq.com'
 __copyright__ = 'Copyright (c) 2015 Mundo Reader S.L.'
 __license__ = 'GPLv2'
 
-################################################################################
-# Dealer: is responsible for routing a call originating from the Caller to the #
-#         Callee and route back results or errors                              #
-################################################################################
-
 import json
+from collections import OrderedDict
+from geventwebsocket import WebSocketApplication, WebSocketServer, Resource
 
 from rainbow.singleton import Singleton
 
@@ -49,8 +46,7 @@ class InternalError(JSONRPCException):
 
 
 @Singleton
-class Dealer(object):
-
+class CallManager(object):
     def __init__(self):
         self.functions = {}
 
@@ -162,25 +158,30 @@ class Dealer(object):
             raise InvalidRequest
 
 
-from geventwebsocket import WebSocketApplication
+_call_manager = CallManager()
+
 
 class DealerApplication(WebSocketApplication):
     def on_message(self, message):
-        response = dealer.process_request(message)
+        response = _call_manager.process_request(message)
         if response is not None:
             self.ws.send(response)
 
-try:
-    from rainbow.dealer import DealerApplication
-    from rainbow.broker import Broker
-    broker.set_host(host)
-    from collections import OrderedDict
-    from geventwebsocket import WebSocketServer, Resource
-    dealer_server = WebSocketServer((host, 8080),
-                                    Resource(OrderedDict({'/': DealerApplication})),
-                                    debug=debug)
-    dealer_server.serve_forever()
-except KeyboardInterrupt:
-    dealer_server.close()
-except Exception as e:
-    print str(e)
+
+@Singleton
+class Dealer(object):
+    """
+    It is responsible for routing a call originating from the Caller
+    to the Callee and route back results or errors
+    """
+    def register(self, key, function):
+        _call_manager.register(key, function)
+    def run_forever(self, host='0.0.0.0', debug=False):
+        try:
+            dealer_server = WebSocketServer(
+                (host, 8080),
+                Resource(OrderedDict({'/': DealerApplication})),
+                debug=debug)
+            dealer_server.serve_forever()
+        except KeyboardInterrupt:
+            dealer_server.close()

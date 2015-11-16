@@ -11,19 +11,11 @@ __license__ = 'GPLv2'
 
 __version__ = '0.0.3'
 
+from rainbow.dealer import Dealer
+from rainbow.broker import Broker
 
-################################################################################
-# Public methods: register, publish, run                                       #
-################################################################################
-
-try:
-    from rainbow.dealer import Dealer
-    from rainbow.broker import Broker
-
-    dealer, broker = Dealer(), Broker()
-
-except Exception as e:
-    print str(e)
+dealer = Dealer()
+broker = Broker()
 
 
 def register(key):
@@ -37,7 +29,7 @@ def publish(event=None, data=None):
     broker.publish(event, data)
 
 
-def run(host='0.0.0.0', webserver=True, webbrowser=True, debug=False):
+def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
     print 'Running server ' + host
     if webserver:
         from rainbow import webserver
@@ -46,7 +38,4 @@ def run(host='0.0.0.0', webserver=True, webbrowser=True, debug=False):
             import webbrowser
             webbrowser.open('http://' + host + ':8000')
     broker.run(host)
-    # dealer.run_forever(host, debug)
-    while True:
-        import gevent
-        gevent.sleep(0.05)
+    dealer.run_forever(host, debug)
