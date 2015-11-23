@@ -15,6 +15,10 @@ sudo apt-get install python-dev libzmq-dev
 pip install pyrainbow
 ```
 
+## Protocol
+
+[Rainbow protocol](doc/protocol.md)
+
 ## Example
 
 Basic example
@@ -22,7 +26,7 @@ Basic example
 ```python
 from rainbow import register, run
 
-@register('add')
+@register
 def add(a, b):
     return a + b
 
@@ -34,7 +38,7 @@ Publish example
 ```python
 from rainbow import register, publish, run
 
-@register('pub')
+@register
 def pub():
     publish('event', 'data')
 

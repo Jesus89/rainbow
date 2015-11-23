@@ -200,8 +200,8 @@ class Dealer(object):
     It is responsible for routing a call originating from the Caller
     to the Callee and route back results or errors
     """
-    def register(self, key, function):
-        _call_manager.register(key, function)
+    def register(self, function):
+        _call_manager.register(function.__name__, function)
 
     def run_forever(self, host='0.0.0.0', debug=False):
         try:

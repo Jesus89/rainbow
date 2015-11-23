@@ -1,7 +1,7 @@
 from rainbow import register, publish, run
 
 
-@register('pub')
+@register
 def pub():
     publish('event', 'data')
 

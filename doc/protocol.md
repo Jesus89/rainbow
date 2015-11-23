@@ -4,7 +4,7 @@
 
 ### Discovery
 
-When '_functions' method is requested by JSON-RPC, result is the list of functions. Each function is defined by:
+When '_functions' method is requested by JSON-RPC, the result is a list of functions. Each function is defined by:
 
  * name: string
  * doc: string
@@ -13,15 +13,15 @@ When '_functions' method is requested by JSON-RPC, result is the list of functio
 #### Example
 
  ```python
- @register('add')
+ @register
  def add(a, b=5):
      """Add two elements"""
      return a + b
 
- @register('sub')
- def sub(a, b=10.2):
+ @register
+ def sub(c, d=10.2):
      """Subtract two elements"""
-     return a - b
+     return c - d
  ```
 
 Generates
@@ -29,19 +29,19 @@ Generates
 ```javascript
 [
    {
-      "name":"add",
-      "doc":"Add two elements",
-      "args":{
-         "a":null,
-         "b":5
+      "name": "add",
+      "doc": "Add two elements",
+      "args": {
+         "a": null,
+         "b": 5
       }
    },
    {
-      "name":"sub",
-      "doc":"Subtract two elements",
-      "args":{
-         "a":null,
-         "b":10.2
+      "name": "sub",
+      "doc": "Subtract two elements",
+      "args": {
+         "c": null,
+         "d": 10.2
       }
    }
 ]
@@ -63,8 +63,8 @@ Sends
 
 ```javascript
 {
-   "time":"2015-11-23T17:29:18.634255",
-   "event":"event.progress",
-   "data":78.9
+   "time": "2015-11-23T17:29:18.634255",
+   "event": "event.progress",
+   "data": 78.9
 }
 ```

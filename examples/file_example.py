@@ -2,7 +2,7 @@ import base64
 from rainbow import register, run
 
 
-@register('save_file')
+@register
 def save_file(name, content):
     with open(name, 'w') as file_:
         file_.write(base64.b64decode(content))

@@ -21,11 +21,9 @@ except:
     pass
 
 
-def register(key):
-    def decorator(function):
-        dealer.register(key, function)
-        return function
-    return decorator
+def register(function):
+    dealer.register(function)
+    return function
 
 
 def publish(event=None, data=None):
