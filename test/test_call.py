@@ -9,24 +9,24 @@ class RainbowTest(unittest.TestCase):
     def setUp(self):
         # Register functions
 
-        @register('pi')
+        @register
         def pi():
             return 3.141592
 
-        @register('hello')
+        @register
         def hello(name):
             return 'Hello, ' + name
 
-        @register('sum')
+        @register
         def sum(a, b):
             return a + b
 
-        @register('list')
-        def _list(a, b, c, d):
+        @register
+        def list(a, b, c, d):
             return [a, b, c, d]
 
-        @register('dict')
-        def _dict(key, value):
+        @register
+        def dict(key, value):
             ret = {}
             ret[key] = value
             return ret

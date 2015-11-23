@@ -7,6 +7,7 @@ __copyright__ = 'Copyright (c) 2015 Mundo Reader S.L.'
 __license__ = 'GPLv2'
 
 import json
+import inspect
 from collections import OrderedDict
 from geventwebsocket import WebSocketApplication, WebSocketServer, Resource
 
@@ -142,7 +143,7 @@ class CallManager(object):
         result = None
         if isinstance(key, unicode):
             if key == '_functions':
-                return self.functions.keys()
+                return self.functions_descriptor()
             elif key in self.functions:
                 try:
                     result = self.functions[key](*args, **kwargs)
@@ -156,6 +157,31 @@ class CallManager(object):
                 raise MethodNotFound
         else:
             raise InvalidRequest
+
+    def functions_descriptor(self):
+        functions = []
+        for name, function in self.functions.iteritems():
+            m = {}
+            m['name'] = name
+            m['doc'] = function.__doc__
+            args = inspect.getargspec(function).args
+            nargs = len(args)
+            if nargs > 0:
+                defaults = inspect.getargspec(function).defaults
+                if defaults is None:
+                    defaults = []
+                else:
+                    defaults = list(defaults)
+                defaults = [None] * (nargs - len(defaults)) + defaults
+                m['args'] = {}
+                for i in range(0, nargs):
+                    argument = {}
+                    argument[args[i]] = defaults[i]
+                    m['args'].update(argument)
+            else:
+                m['args'] = None
+            functions += [m]
+        return functions
 
 
 _call_manager = CallManager()
@@ -174,8 +200,9 @@ class Dealer(object):
     It is responsible for routing a call originating from the Caller
     to the Callee and route back results or errors
     """
-    def register(self, key, function):
-        _call_manager.register(key, function)
+    def register(self, function):
+        _call_manager.register(function.__name__, function)
+
     def run_forever(self, host='0.0.0.0', debug=False):
         try:
             dealer_server = WebSocketServer(

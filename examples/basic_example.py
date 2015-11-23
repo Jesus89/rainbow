@@ -1,7 +1,7 @@
 from rainbow import register, run
 
 
-@register('add')
+@register
 def add(a, b):
     return a + b
 

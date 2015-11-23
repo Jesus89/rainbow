@@ -9,7 +9,7 @@ __email__ = 'jesus.arroyo@bq.com'
 __copyright__ = 'Copyright (c) 2015 Mundo Reader S.L.'
 __license__ = 'GPLv2'
 
-__version__ = '0.0.4'
+__version__ = '0.0.5'
 
 try:
     from rainbow.dealer import Dealer
@@ -21,11 +21,9 @@ except:
     pass
 
 
-def register(key):
-    def decorator(function):
-        dealer.register(key, function)
-        return function
-    return decorator
+def register(function):
+    dealer.register(function)
+    return function
 
 
 def publish(event=None, data=None):
@@ -33,7 +31,7 @@ def publish(event=None, data=None):
 
 
 def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
-    print 'Running server ' + host
+    print('Running server ' + host)
     if webserver:
         from rainbow import webserver
         webserver.run(host)

@@ -5,7 +5,7 @@ from rainbow import register, publish, run
 running = False
 
 
-@register('start')
+@register
 def start():
     global running
     if not running:
@@ -16,12 +16,12 @@ def start():
 def _start():
     global running
     while running:
-        print "Hello, world!"
+        print("Hello, world!")
         publish('event.hello', "Hello, world!")
         time.sleep(3)
 
 
-@register('stop')
+@register
 def stop():
     global running
     running = False
