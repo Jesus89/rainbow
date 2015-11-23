@@ -13,31 +13,31 @@ class RainbowTest(unittest.TestCase):
     def setUp(self):
         # Register functions
 
-        @register('subtract')
+        @register
         def subtract(minuend, subtrahend):
             return minuend - subtrahend
 
-        @register('update')
+        @register
         def update(a, b, c, d, e):
             pass
 
-        @register('foobar')
+        @register
         def foobar():
             pass
 
-        @register('sum')
+        @register
         def sum(a, b, c):
             return a + b + c
 
-        @register('notify_sum')
+        @register
         def notify_sum(a, b, c):
             pass
 
-        @register('notify_hello')
+        @register
         def notify_hello(a):
             pass
 
-        @register('get_data')
+        @register
         def get_data():
             return ["hello", 5]
 
