@@ -159,9 +159,10 @@ class CallManager(object):
             raise InvalidRequest
 
     def functions_descriptor(self):
-        ret = {}
+        functions = []
         for name, function in self.functions.iteritems():
             m = {}
+            m['name'] = name
             m['doc'] = function.__doc__
             args = inspect.getargspec(function).args
             nargs = len(args)
@@ -179,8 +180,8 @@ class CallManager(object):
                     m['args'].update(argument)
             else:
                 m['args'] = None
-            ret[name] = m
-        return ret
+            functions += [m]
+        return functions
 
 
 _call_manager = CallManager()

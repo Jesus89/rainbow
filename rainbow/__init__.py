@@ -33,7 +33,7 @@ def publish(event=None, data=None):
 
 
 def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
-    print 'Running server ' + host
+    print('Running server ' + host)
     if webserver:
         from rainbow import webserver
         webserver.run(host)

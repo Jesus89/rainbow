@@ -16,7 +16,7 @@ def start():
 def _start():
     global running
     while running:
-        print "Hello, world!"
+        print("Hello, world!")
         publish('event.hello', "Hello, world!")
         time.sleep(3)
 
