@@ -6,6 +6,7 @@
         <script type="text/javascript">
             var ws_dealer;
             var ws_broker;
+            var functions;
             function wsconnect() {
                 if ("WebSocket" in window) {
 
@@ -23,14 +24,18 @@
                         var response = JSON.parse(event.data);
                         var method_combo = document.getElementById("method_combo");
                         if (response.id === 1234) {
+                            // _functions
+                            functions = response.result;
                             while(method_combo.options.length) {
                                 method_combo.remove(0);
                             }
-                            for (var item in response.result) {
+                            for (var item in functions) {
                                 var option = document.createElement("option");
-                                option.text = response.result[item];
+                                option.text = item;
+                                option.value = JSON.stringify(functions[item].args);
                                 method_combo.add(option, null);
                             }
+                            methodchange();
                         }
                         else {
                             $("#response").val("");
@@ -93,6 +98,16 @@
                 }
                 ws_dealer.send(JSON.stringify(request));
             }
+            function methodchange() {
+                var method_combo = document.getElementById("method_combo");
+                var selected_method = method_combo.options[method_combo.selectedIndex];
+                if (selected_method.value === "null") {
+                    $("#params").val("");
+                }
+                else {
+                    $("#params").val(selected_method.value);
+                }
+            }
             function eventsclear() {
                 var table = document.getElementById("events");
                 while(table.rows.length > 1) {
@@ -127,11 +142,11 @@
         </div>
         <h3>Request</h3>
         <div>
-            <select name="method_combo" id="method_combo"></select>
+            <select name="method_combo" id="method_combo" onchange="methodchange()"></select>
             <input type="submit" value="Execute" onclick="wssend()">
         </div>
         </br>
-        <textarea name="params" rows="3" cols="38" id="params">[1, 2]</textarea>
+        <textarea name="params" rows="3" cols="38" id="params"></textarea>
         </br></br>
         <div>
             <input type="submit" value="Clear" onclick="paramsclear()">

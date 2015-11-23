@@ -7,6 +7,7 @@ __copyright__ = 'Copyright (c) 2015 Mundo Reader S.L.'
 __license__ = 'GPLv2'
 
 import json
+import inspect
 from collections import OrderedDict
 from geventwebsocket import WebSocketApplication, WebSocketServer, Resource
 
@@ -142,7 +143,7 @@ class CallManager(object):
         result = None
         if isinstance(key, unicode):
             if key == '_functions':
-                return self.functions.keys()
+                return self.functions_descriptor()
             elif key in self.functions:
                 try:
                     result = self.functions[key](*args, **kwargs)
@@ -156,6 +157,30 @@ class CallManager(object):
                 raise MethodNotFound
         else:
             raise InvalidRequest
+
+    def functions_descriptor(self):
+        ret = {}
+        for name, function in self.functions.iteritems():
+            m = {}
+            m['doc'] = function.__doc__
+            args = inspect.getargspec(function).args
+            nargs = len(args)
+            if nargs > 0:
+                defaults = inspect.getargspec(function).defaults
+                if defaults is None:
+                    defaults = []
+                else:
+                    defaults = list(defaults)
+                defaults = [None] * (nargs - len(defaults)) + defaults
+                m['args'] = {}
+                for i in range(0, nargs):
+                    argument = {}
+                    argument[args[i]] = defaults[i]
+                    m['args'].update(argument)
+            else:
+                m['args'] = None
+            ret[name] = m
+        return ret
 
 
 _call_manager = CallManager()
@@ -176,6 +201,7 @@ class Dealer(object):
     """
     def register(self, key, function):
         _call_manager.register(key, function)
+
     def run_forever(self, host='0.0.0.0', debug=False):
         try:
             dealer_server = WebSocketServer(
