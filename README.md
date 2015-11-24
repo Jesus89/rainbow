@@ -11,7 +11,11 @@ Micro-framework for Python RPC+P&S communication over WebSockets
 ## Installation
 
 ```bash
-sudo apt-get install python-dev libzmq-dev
+sudo apt-get install python-dev libzmq-dev avahi-daemon
+
+# Disable avahi on init
+sudo update-rc.d -f avahi-daemon remove
+
 pip install pyrainbow
 ```
 

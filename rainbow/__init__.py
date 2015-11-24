@@ -30,8 +30,12 @@ def publish(event=None, data=None):
     broker.publish(event, data)
 
 
-def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
+def run(host='0.0.0.0', avahi=False, webserver=False, webbrowser=False, debug=False):
     print('Running server ' + host)
+    avahi_server = None
+    if avahi:
+        from rainbow import avahi
+        avahi_server = avahi.run()
     if webserver:
         from rainbow import webserver
         webserver.run(host)
@@ -40,3 +44,5 @@ def run(host='0.0.0.0', webserver=False, webbrowser=False, debug=False):
             webbrowser.open('http://' + host + ':8000')
     broker.run(host)
     dealer.run_forever(host, debug)
+    if avahi_server:
+        avahi_server.kill()
