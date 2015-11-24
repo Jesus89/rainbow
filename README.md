@@ -16,7 +16,7 @@ sudo apt-get install python-dev libzmq-dev avahi-daemon
 # Disable avahi on init
 sudo update-rc.d -f avahi-daemon remove
 
-pip install pyrainbow
+sudo pip install pyrainbow
 ```
 
 ## Protocol

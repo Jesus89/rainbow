@@ -8,7 +8,6 @@ __license__ = 'GPLv2'
 
 
 def run():
-    """Sudo is needed"""
     _service = None
     try:
         import psutil

@@ -5,4 +5,4 @@ from rainbow import register, run
 def add(a, b):
     return a + b
 
-run(host='0.0.0.0', avahi=True)
+run(host='0.0.0.0', avahi=True)  # sudo required

@@ -12,4 +12,4 @@ def sub(a, b=3):
     publish('event.sub', '{0} - {1}'.format(a, b))
     return a - b
 
-run(host='0.0.0.0', avahi=True, webserver=True, webbrowser=True)
+run(host='0.0.0.0', webserver=True, webbrowser=True)
