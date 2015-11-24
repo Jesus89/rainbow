@@ -176,14 +176,27 @@ class CallManager(object):
                 defaults = [None] * (nargs - len(defaults)) + defaults
                 m['args'] = {}
                 for i in range(0, nargs):
-                    argument = {}
-                    argument[args[i]] = {'type': self.json_type(defaults[i]),
-                                         'value': defaults[i]}
-                    m['args'].update(argument)
+                    m['args'].update(self.add_arg(args[i], defaults[i]))
             else:
                 m['args'] = None
             functions += [m]
         return functions
+
+    def add_arg(self, name, value):
+        arg = {}
+        _type = self.json_type(value)
+        if isinstance(value, list):
+            arg[name] = {'type': _type, 'value': {}}
+            for key, val in enumerate(value):
+                arg[name]['value'].update(self.add_arg(str(key), val))
+        elif isinstance(value, dict):
+            arg[name] = {'type': _type, 'value': {}}
+            for key, val in value.iteritems():
+                arg[name]['value'].update(self.add_arg(key, val))
+        else:
+            arg[name] = {'type': _type,
+                         'value': value}
+        return arg
 
     def json_type(self, value):
         if isinstance(value, bool):

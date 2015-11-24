@@ -6,20 +6,22 @@
 
 When '_functions' method is requested by JSON-RPC, the result is a list of functions. Each function is defined by:
 
- * name: string
- * doc: string
- * args: dictionary
+ * name: String
+ * doc: String
+ * args: Object
+   * type: Number | Boolean | String | Object
+   * value
 
 #### Example
 
  ```python
  @register
- def add(a, b=5):
+ def add(a=0, b=0):
      """Add two elements"""
      return a + b
 
  @register
- def sub(c, d=10.2):
+ def sub(c=0, d=0):
      """Subtract two elements"""
      return c - d
  ```
@@ -32,16 +34,28 @@ Generates
       "name": "add",
       "doc": "Add two elements",
       "args": {
-         "a": null,
-         "b": 5
+         "a": {
+            "type": "Number",
+            "value": 0
+         },
+         "b": {
+            "type": "Number",
+            "value": 0
+         }
       }
    },
    {
       "name": "sub",
       "doc": "Subtract two elements",
       "args": {
-         "c": null,
-         "d": 10.2
+         "c": {
+            "type": "Number",
+            "value": 0
+         },
+         "d": {
+            "type": "Number",
+            "value": 0
+         }
       }
    }
 ]
