@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+  <name>Rainbow</name>
+  <service>
+    <type>_rainbow._tcp</type>
+    <port>8080</port>
+    <txt-record>field=1234</txt-record>
+  </service>
+</service-group>

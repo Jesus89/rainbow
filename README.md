@@ -2,7 +2,7 @@
 
 [![License](http://img.shields.io/:license-gpl-blue.svg?style=flat)](http://opensource.org/licenses/GPL-2.0) [![Build Status](https://travis-ci.org/bqlabs/rainbow.svg)](https://travis-ci.org/bqlabs/rainbow)
 
-Micro-framework for Python RPC+P&S communication over WebSockets
+Micro-framework for Python RPC+Pub/Sub communication over WebSockets
 * Based on the [WAMP](http://wamp-proto.org/why/) protocol.
 * Compatible with [JSON-RPC 2.0](http://www.jsonrpc.org/specification).
 * JSON Events using the [Publish/Subscribe pattern](http://rfc.zeromq.org/spec:29).
@@ -11,13 +11,21 @@ Micro-framework for Python RPC+P&S communication over WebSockets
 ## Installation
 
 ```bash
-sudo apt-get install python-dev libzmq-dev
-pip install pyrainbow
+sudo apt-get install python-dev libzmq-dev avahi-daemon
+
+# Disable avahi on init
+sudo update-rc.d -f avahi-daemon remove
+
+sudo pip install pyrainbow
 ```
 
 ## Protocol
 
 [Rainbow protocol](doc/protocol.md)
+
+## Description
+
+[API description](doc/api-description.md)
 
 ## Example
 
@@ -27,7 +35,7 @@ Basic example
 from rainbow import register, run
 
 @register
-def add(a, b):
+def add(a=0, b=0):
     return a + b
 
 run(host='0.0.0.0')

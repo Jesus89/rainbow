@@ -109,6 +109,7 @@ class CallManager(object):
                         'id': None}
             if isinstance(e, InternalError):
                 response['error']['data'] = e.data
+                response['id'] = request['id']
             if isinstance(e, MethodNotFound) or isinstance(e, InvalidParams):
                 response['id'] = request['id']
         else:
@@ -175,14 +176,38 @@ class CallManager(object):
                 defaults = [None] * (nargs - len(defaults)) + defaults
                 m['args'] = {}
                 for i in range(0, nargs):
-                    argument = {}
-                    argument[args[i]] = defaults[i]
-                    m['args'].update(argument)
+                    m['args'].update(self.add_arg(args[i], defaults[i]))
             else:
                 m['args'] = None
             functions += [m]
         return functions
 
+    def add_arg(self, name, value):
+        arg = {}
+        _type = self.json_type(value)
+        if isinstance(value, list):
+            arg[name] = {'type': _type, 'value': {}}
+            for key, val in enumerate(value):
+                arg[name]['value'].update(self.add_arg(str(key), val))
+        elif isinstance(value, dict):
+            arg[name] = {'type': _type, 'value': {}}
+            for key, val in value.iteritems():
+                arg[name]['value'].update(self.add_arg(key, val))
+        else:
+            arg[name] = {'type': _type,
+                         'value': value}
+        return arg
+
+    def json_type(self, value):
+        if isinstance(value, bool):
+            return 'Boolean'
+        if isinstance(value, int) or isinstance(value, float):
+            return 'Number'
+        if isinstance(value, str) or isinstance(value, unicode):
+            return 'String'
+        if isinstance(value, list) or isinstance(value, dict):
+            return 'Object'
+        return 'Null'
 
 _call_manager = CallManager()
 
@@ -191,7 +216,10 @@ class DealerApplication(WebSocketApplication):
     def on_message(self, message):
         response = _call_manager.process_request(message)
         if response is not None:
-            self.ws.send(response)
+            try:
+                self.ws.send(response)
+            except:
+                pass
 
 
 @Singleton
@@ -212,3 +240,4 @@ class Dealer(object):
             dealer_server.serve_forever()
         except KeyboardInterrupt:
             dealer_server.close()
+            raise KeyboardInterrupt
