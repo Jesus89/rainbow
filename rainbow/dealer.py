@@ -191,7 +191,10 @@ class DealerApplication(WebSocketApplication):
     def on_message(self, message):
         response = _call_manager.process_request(message)
         if response is not None:
-            self.ws.send(response)
+            try:
+                self.ws.send(response)
+            except:
+                pass
 
 
 @Singleton

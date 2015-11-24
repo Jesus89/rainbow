@@ -8,6 +8,7 @@ __license__ = 'GPLv2'
 
 
 def run():
+    # TODO: stop avahi-daemon if it is running
     _service = None
     try:
         import psutil

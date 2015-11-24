@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # This file is part of the Rainbow Project
 """
-Rainbow is a micro-framework for Python RPC+P&S communication over WebSockets.
+Rainbow is a micro-framework for Python RPC+Pub/Sub communication over WebSockets.
 """
 
 __author__ = 'Jesús Arroyo Torrens'
