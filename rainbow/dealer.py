@@ -240,3 +240,4 @@ class Dealer(object):
             dealer_server.serve_forever()
         except KeyboardInterrupt:
             dealer_server.close()
+            raise KeyboardInterrupt

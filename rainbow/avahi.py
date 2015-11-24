@@ -8,12 +8,17 @@ __license__ = 'GPLv2'
 
 
 def run():
-    # TODO: stop avahi-daemon if it is running
     _service = None
+    name = 'avahi-daemon'
     try:
+        import time
         import psutil
         import subprocess
-        subp = subprocess.Popen(['avahi-daemon'],
+        # Stop daemon if running
+        subprocess.Popen(['service', name, 'stop'])
+        time.sleep(0.5)
+        # Start daemon
+        subp = subprocess.Popen([name],
                                 shell=False,
                                 stdin=None,
                                 stdout=None,

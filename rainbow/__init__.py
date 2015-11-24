@@ -42,7 +42,9 @@ def run(host='0.0.0.0', avahi=False, webserver=False, webbrowser=False, debug=Fa
         if webbrowser:
             import webbrowser
             webbrowser.open('http://' + host + ':8000')
-    broker.run(host)
-    dealer.run_forever(host, debug)
-    if avahi_server:
-        avahi_server.kill()
+    try:
+        broker.run(host)
+        dealer.run_forever(host, debug)
+    except:
+        if avahi_server:
+            avahi_server.kill()

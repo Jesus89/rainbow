@@ -9,7 +9,7 @@ def add(a=0, b=1.2, c=False, d={"item": True}, l=[1, 2, 3]):
 
 
 @register
-def sub(a, b=3):
+def sub(a=0, b=3, text="text"):
     """Subtract a - b"""
     publish('event.sub', '{0} - {1}'.format(a, b))
     return a - b
