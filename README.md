@@ -23,6 +23,10 @@ sudo pip install pyrainbow
 
 [Rainbow protocol](doc/protocol.md)
 
+## Description
+
+[API description](doc/api-description.md)
+
 ## Example
 
 Basic example
