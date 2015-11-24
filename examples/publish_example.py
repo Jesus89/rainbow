@@ -5,4 +5,4 @@ from rainbow import register, publish, run
 def pub():
     publish('event', 1234)
 
-run(host='0.0.0.0', avahi=True)
+run(host='0.0.0.0')

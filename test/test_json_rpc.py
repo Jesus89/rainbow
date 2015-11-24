@@ -41,6 +41,10 @@ class RainbowTest(unittest.TestCase):
         def get_data():
             return ["hello", 5]
 
+        @register
+        def error_div():
+            1 / 0
+
     def test_subtract_pos_params(self):
         request = '{"jsonrpc": "2.0","method": "subtract","params": [42, 23],"id": 1}'
         response = '{"jsonrpc": "2.0", "result": 19, "id": 1}'
@@ -89,6 +93,12 @@ class RainbowTest(unittest.TestCase):
         request = '{"jsonrpc": "2.0", "method": "bar", "id": "1"}'
         response = '{"jsonrpc": "2.0", "error": {"code": -32601, ' \
                    '"message": "Method not found"}, "id": "1"}'
+        self.assertEqual(dealer.process_request(request), jsonok(response))
+
+    def test_internal_error(self):
+        request = '{"jsonrpc": "2.0", "method": "error_div", "id": 1}'
+        response = '{"jsonrpc": "2.0", "error": { "message": "Internal error", ' \
+                   '"code": -32603, "data": "integer division or modulo by zero"}, "id": 1}'
         self.assertEqual(dealer.process_request(request), jsonok(response))
 
     def test_invalid_json(self):

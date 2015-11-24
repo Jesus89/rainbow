@@ -109,6 +109,7 @@ class CallManager(object):
                         'id': None}
             if isinstance(e, InternalError):
                 response['error']['data'] = e.data
+                response['id'] = request['id']
             if isinstance(e, MethodNotFound) or isinstance(e, InvalidParams):
                 response['id'] = request['id']
         else:
