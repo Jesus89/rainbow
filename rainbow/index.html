@@ -32,6 +32,7 @@
                             for (var item in functions) {
                                 var option = document.createElement("option");
                                 option.text = functions[item].name;
+                                // TODO: implement new arguments
                                 option.value = JSON.stringify(functions[item].args);
                                 method_combo.add(option, null);
                             }

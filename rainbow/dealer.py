@@ -177,13 +177,24 @@ class CallManager(object):
                 m['args'] = {}
                 for i in range(0, nargs):
                     argument = {}
-                    argument[args[i]] = defaults[i]
+                    argument[args[i]] = {'type': self.json_type(defaults[i]),
+                                         'value': defaults[i]}
                     m['args'].update(argument)
             else:
                 m['args'] = None
             functions += [m]
         return functions
 
+    def json_type(self, value):
+        if isinstance(value, bool):
+            return 'Boolean'
+        if isinstance(value, int) or isinstance(value, float):
+            return 'Number'
+        if isinstance(value, str) or isinstance(value, unicode):
+            return 'String'
+        if isinstance(value, list) or isinstance(value, dict):
+            return 'Object'
+        return 'Null'
 
 _call_manager = CallManager()
 

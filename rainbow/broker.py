@@ -64,5 +64,8 @@ class BrokerWebSocket(object):
         sock.setsockopt(zmq.SUBSCRIBE, "")
         sock.connect('inproc://queue')
         while True:
-            msg = sock.recv()
-            ws.send(msg)
+            try:
+                msg = sock.recv()
+                ws.send(msg)
+            except:
+                pass

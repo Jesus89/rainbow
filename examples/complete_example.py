@@ -2,7 +2,7 @@ from rainbow import register, publish, run
 
 
 @register
-def add(a, b=2):
+def add(a=0, b=1.2, c=False, d={"item": True}, l=[1, 2, 3]):
     publish('event.add', '{0} + {1}'.format(a, b))
     return a + b
 
