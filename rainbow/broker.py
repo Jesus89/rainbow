@@ -9,7 +9,7 @@ __license__ = 'GPLv2'
 import json
 import gevent
 import datetime
-from gevent_zeromq import zmq
+import zmq.green as zmq
 from geventwebsocket.handler import WebSocketHandler
 
 from rainbow.singleton import Singleton
@@ -47,8 +47,13 @@ def zmq_server(context):
     sock_outgoing.bind('inproc://queue')
     sock_incoming.setsockopt(zmq.SUBSCRIBE, "")
     while True:
-        msg = sock_incoming.recv()
-        sock_outgoing.send(msg)
+        try:
+            msg = sock_incoming.recv()
+            sock_outgoing.send(msg)
+        except:
+            sock_incoming.close()
+            sock_outgoing.close()
+            break
 
 
 class BrokerWebSocket(object):
@@ -68,4 +73,6 @@ class BrokerWebSocket(object):
                 msg = sock.recv()
                 ws.send(msg)
             except:
-                pass
+                sock.close()
+                ws.close()
+                break

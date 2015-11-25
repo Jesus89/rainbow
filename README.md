@@ -12,7 +12,7 @@ Micro-framework for Python RPC+Pub/Sub communication over WebSockets
 ## Installation
 
 ```bash
-sudo apt-get install python-dev libzmq-dev avahi-daemon
+sudo apt-get install python-dev libzmq3-dev avahi-daemon
 
 # Disable avahi on init
 sudo update-rc.d -f avahi-daemon remove
