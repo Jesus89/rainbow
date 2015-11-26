@@ -45,7 +45,7 @@ def zmq_server(context):
     sock_outgoing = context.socket(zmq.PUB)
     sock_incoming.bind('tcp://*:5000')
     sock_outgoing.bind('inproc://queue')
-    sock_incoming.setsockopt(zmq.SUBSCRIBE, "")
+    sock_incoming.setsockopt(zmq.SUBSCRIBE, b"")
     while True:
         try:
             msg = sock_incoming.recv()
@@ -66,7 +66,7 @@ class BrokerWebSocket(object):
     def __call__(self, environ, start_response):
         ws = environ['wsgi.websocket']
         sock = self.context.socket(zmq.SUB)
-        sock.setsockopt(zmq.SUBSCRIBE, "")
+        sock.setsockopt(zmq.SUBSCRIBE, b"")
         sock.connect('inproc://queue')
         while True:
             try:

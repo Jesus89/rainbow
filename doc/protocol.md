@@ -2,36 +2,50 @@
 
 ## Functions
 
-### Discovery
+### Description
 
 When '_functions' method is requested by JSON-RPC, the result is a list of functions. Each function is defined by:
 
  * name: String
- * doc: String
- * args: Object
-   * type: Number | Boolean | String | Object
+ * doc: String | Null
+ * args: Object | Null
+   * type: Number | String | Boolean | Array | Object | Null
    * value
 
 #### Example
 
- ```python
- @register
- def add(a=0, b=0):
-     """Add two elements"""
-     return a + b
+```python
+@register
+def test0():
+    "Does nothing"
+    pass
 
- @register
- def sub(c=0, d=0):
-     """Subtract two elements"""
-     return c - d
- ```
+@register
+def test1(a=0, b=0.0):
+    """Add two elements"""
+    return a + b
+
+@register
+def test2(a='', b=True):
+    return '{0} {1}'.format(a, b)
+
+@register
+def test3(l=[1, False, {'item': 12}]):
+    for i in l:
+        print(i)
+```
 
 Generates
 
 ```javascript
 [
    {
-      "name": "add",
+      "name": "test0",
+      "doc": "Does nothing",
+      "args": null
+   },
+   {
+      "name": "test1",
       "doc": "Add two elements",
       "args": {
          "a": {
@@ -40,21 +54,49 @@ Generates
          },
          "b": {
             "type": "Number",
-            "value": 0
+            "value": 0.0
          }
       }
    },
    {
-      "name": "sub",
-      "doc": "Subtract two elements",
+      "name": "test2",
+      "doc": null,
       "args": {
-         "c": {
-            "type": "Number",
-            "value": 0
+         "a": {
+            "type": "String",
+            "value": ""
          },
-         "d": {
-            "type": "Number",
-            "value": 0
+         "b": {
+            "type": "Boolean",
+            "value": true
+         }
+      }
+   },
+   {
+      "name": "test3",
+      "doc": null,
+      "args": {
+         "l": {
+            "type": "Array",
+            "value": [
+               {
+                  "type": "Number",
+                  "value": 1
+               },
+               {
+                  "type": "Boolean",
+                  "value": false
+               },
+               {
+                  "type": "Object",
+                  "value": {
+                     "item": {
+                        "type": "Number",
+                        "value": 12
+                     }
+                  }
+               }
+            ]
          }
       }
    }
