@@ -20,6 +20,25 @@
                                    id: 1234};
                         ws_dealer.send(JSON.stringify(request));
                     }
+                    function check_arg(arg) {
+                        return (arg instanceof Object) && (JSON.stringify(Object.keys(arg)) === JSON.stringify(['type', 'value']));
+                    }
+                    function process_args(args) {
+                        // Convert API description args to funcion args
+                        var pargs = args;
+                        if (check_arg(args)) {
+                            if (args.type === 'Array') {
+                                pargs = [];
+                                for (var i in args.value) { pargs.push(process_args(args.value[i])); }
+                            }
+                            else { pargs = process_args(args.value); }
+                        }
+                        else if (args instanceof Object) {
+                            pargs = {};
+                            for (var key in args) { pargs[key] = process_args(args[key]); }
+                        }
+                        return pargs;
+                    }
                     ws_dealer.onmessage = function (event) {
                         var response = JSON.parse(event.data);
                         var method_combo = document.getElementById("method_combo");
@@ -32,8 +51,7 @@
                             for (var item in functions) {
                                 var option = document.createElement("option");
                                 option.text = functions[item].name;
-                                // TODO: implement new arguments
-                                option.value = JSON.stringify(functions[item].args);
+                                option.value = JSON.stringify(process_args(functions[item].args));
                                 method_combo.add(option, null);
                             }
                             methodchange();
@@ -73,7 +91,7 @@
                         var row = table.insertRow(1);
                         row.insertCell(0).innerHTML = data.time;
                         row.insertCell(1).innerHTML = data.event;
-                        row.insertCell(2).innerHTML = data.data;
+                        row.insertCell(2).innerHTML = JSON.stringify(data.data);
                     };
                     ws_broker.onclose = function() {
                         //alert("Broker connected");
