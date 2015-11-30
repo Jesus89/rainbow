@@ -7,11 +7,12 @@ Micro-framework for Python RPC+Pub/Sub communication over WebSockets
 * Compatible with [JSON-RPC 2.0](http://www.jsonrpc.org/specification).
 * JSON Events using the [Publish/Subscribe pattern](http://rfc.zeromq.org/spec:29).
 * Syntax inspired by [Bottle](https://github.com/bottlepy/bottle).
+* It includes [Avahi](http://www.avahi.org/) discovery service.
 
 ## Installation
 
 ```bash
-sudo apt-get install python-dev libzmq-dev avahi-daemon
+sudo apt-get install python-dev libzmq3-dev avahi-daemon
 
 # Disable avahi on init
 sudo update-rc.d -f avahi-daemon remove

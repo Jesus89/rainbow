@@ -176,27 +176,29 @@ class CallManager(object):
                 defaults = [None] * (nargs - len(defaults)) + defaults
                 m['args'] = {}
                 for i in range(0, nargs):
-                    m['args'].update(self.add_arg(args[i], defaults[i]))
+                    m['args'].update(self.add_args(defaults[i], args[i]))
             else:
                 m['args'] = None
             functions += [m]
         return functions
 
-    def add_arg(self, name, value):
-        arg = {}
+    def add_args(self, value, name=None):
         _type = self.json_type(value)
         if isinstance(value, list):
-            arg[name] = {'type': _type, 'value': {}}
-            for key, val in enumerate(value):
-                arg[name]['value'].update(self.add_arg(str(key), val))
+            arg = {'type': _type, 'value': []}
+            for item in value:
+                arg['value'] += [self.add_args(item)]
         elif isinstance(value, dict):
-            arg[name] = {'type': _type, 'value': {}}
+            arg = {'type': _type, 'value': {}}
             for key, val in value.iteritems():
-                arg[name]['value'].update(self.add_arg(key, val))
+                arg['value'].update(self.add_args(val, key))
         else:
-            arg[name] = {'type': _type,
-                         'value': value}
-        return arg
+            arg = {'type': _type, 'value': value}
+        if name is None:
+            ret = arg
+        else:
+            ret = {name: arg}
+        return ret
 
     def json_type(self, value):
         if isinstance(value, bool):
@@ -205,7 +207,9 @@ class CallManager(object):
             return 'Number'
         if isinstance(value, str) or isinstance(value, unicode):
             return 'String'
-        if isinstance(value, list) or isinstance(value, dict):
+        if isinstance(value, list):
+            return 'Array'
+        if isinstance(value, dict):
             return 'Object'
         return 'Null'
 

@@ -1,14 +1,27 @@
-from rainbow import register, run
+from rainbow import register, publish, run
 
 
 @register
-def function(a=0, b=0.0, c=3.14, d='txt', e=False, f={"item": True}, g=[1, 2, 3]):
-    return "Function: {0}{1}{2}{3}{4}".format(a, b, c, d, e)
+def test0():
+    "Publish an event"
+    publish('event', {'v': 3.14})
 
 
 @register
-def test(a=0, b=3.14):
-    return "Test: {0}{1}".format(a, b)
+def test1(a=0, b=0.0):
+    """Add two elements"""
+    return a + b
 
 
-run(host='0.0.0.0')
+@register
+def test2(a='', b=True):
+    return '{0} {1}'.format(a, b)
+
+
+@register
+def test3(l=[1, False, {'item': 12}]):
+    for i in l:
+        print(i)
+    return "OK"
+
+run(host='0.0.0.0', webserver=True, webbrowser=True)
