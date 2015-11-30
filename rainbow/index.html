@@ -92,6 +92,9 @@
                         row.insertCell(0).innerHTML = data.time;
                         row.insertCell(1).innerHTML = data.event;
                         row.insertCell(2).innerHTML = JSON.stringify(data.data);
+                        if (document.getElementById("eventsAlert").checked) {
+                            alert(JSON.stringify(data));
+                        }
                     };
                     ws_broker.onclose = function() {
                         //alert("Broker connected");
@@ -174,7 +177,10 @@
         <h3>Response</h3>
         <textarea readonly name="response" rows="1" cols="38" id="response"></textarea>
         <h3>Events</h3>
-        <input type="submit" value="Clear" onclick="eventsclear()">
+        <div>
+            <input type="submit" value="Clear" onclick="eventsclear()">
+            <input type="checkbox" id="eventsAlert" checked> Use alerts
+        </div>
         </br></br>
         <table border="1" id="events">
             <tr>
