@@ -9,7 +9,7 @@ __email__ = 'jesus.arroyo@bq.com'
 __copyright__ = 'Copyright (c) 2015 Mundo Reader S.L.'
 __license__ = 'GPLv2'
 
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 
 try:
     from rainbow.dealer import Dealer
