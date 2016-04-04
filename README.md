@@ -1,6 +1,6 @@
 ![][rainbow]
 
-[![License](http://img.shields.io/:license-gpl-blue.svg?style=flat)](http://opensource.org/licenses/GPL-2.0) [![Build Status](https://travis-ci.org/bqlabs/rainbow.svg)](https://travis-ci.org/bqlabs/rainbow)
+[![License](http://img.shields.io/:license-gpl-blue.svg?style=flat)](http://opensource.org/licenses/GPL-2.0) [![Build Status](https://travis-ci.org/Jesus89/rainbow.svg)](https://travis-ci.org/Jesus89/rainbow)
 
 Micro-framework for Python RPC+Pub/Sub communication over WebSockets
 * Based on the [WAMP](http://wamp-proto.org/why/) protocol.
@@ -54,6 +54,6 @@ def pub():
 run(host='0.0.0.0')
 ```
 
-Check more amazing [examples](https://github.com/bqlabs/rainbow/tree/develop/examples)!
+Check more amazing [examples](https://github.com/Jesus89/rainbow/tree/develop/examples)!
 
 [rainbow]: doc/images/rainbow.png
